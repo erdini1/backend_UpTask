@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import conectarDB from "./config/db.js"
+import usuarioRoutes from "./routes/usuarioRoutes.js"
 
 const app = express()
 
@@ -8,7 +9,10 @@ dotenv.config()
 
 conectarDB()
 
-// Esto es para que utilice el puerto que se le asigne cuando se suba pero si no hay como es el caso de desarrollo se utiliza el puerto 4000
+//Rotuing
+//Usuarios
+app.use("/api/usuarios", usuarioRoutes)
+
 const PORT = process.env.PORT || 4000
 
 app.listen(PORT, () => {
