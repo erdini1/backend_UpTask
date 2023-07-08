@@ -34,10 +34,18 @@ const autenticar = async (req, res) => {
         const error = new Error("Tu cuenta no fue confirmada")
         return res.status(403).json({ msg: error.message })
     }
-    
-    // Comprobar su password
 
-    res.json({ msg: "Autenticando" })
+    // Comprobar la contraseña del usuario
+    if (await usuario.comprobarPassword(password)) {
+        res.status(200).json({
+            _id: usuario._id,
+            nombre: usuario.nombre,
+            email: usuario.email
+        })
+    } else {
+        const error = new Error("Contraseña incorrecta")
+        return res.status(403).json({ msg: error.message })
+    }
 }
 
 export {
