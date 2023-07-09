@@ -65,11 +65,28 @@ const confirmar = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
+}
 
+const olvidePassword = async (req, res) => {
+    const { email } = req.body
+    const usuario = await Usuario.findOne({ email })
+    if (!usuario) {
+        const error = new Error("El usuario no existe")
+        return res.status(404).json({ msg: error.message })
+    }
+
+    try {
+        usuario.token = generarId()
+        await usuario.save()
+        res.status(200).json({ msg: "Revisa tu correo para recuperar tu contraseña" })
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 export {
     registrar,
     autenticar,
-    confirmar
+    confirmar,
+    olvidePassword
 }
