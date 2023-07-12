@@ -19,6 +19,6 @@ router.post("/olvide-password", olvidePassword) //Solicitar un token para cambia
 router.get("/olvide-password/:token", comprobarToken) //Validar el token para cambiar la contraseña
 router.post("/olvide-password/:token", nuevoPassword) //Recuperar/Modificar contraseña
 
-router.get("/perfil", checkAuth, perfil) //Perfil autenticado
+router.get("/perfil", checkAuth, perfil) //Perfil con usuario autenticado
 
 export default router;
