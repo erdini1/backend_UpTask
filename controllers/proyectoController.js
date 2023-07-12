@@ -5,6 +5,15 @@ const obtenerProyectos = async (req, res) => {
 }
 
 const nuevoProyecto = async (req, res) => {
+    const proyecto = new Proyecto(req.body)
+    proyecto.creador = req.usuario._id
+
+    try {
+        const proyectoAlmacenado = await proyecto.save()
+        res.status(200).json(proyectoAlmacenado)
+    } catch (error) {
+        console.log(error)
+    }
 
 }
 
