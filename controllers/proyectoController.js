@@ -1,12 +1,9 @@
+import mongoose from "mongoose"
 import Proyecto from "../models/Proyecto.js"
 
 const obtenerProyectos = async (req, res) => {
     const { _id } = req.usuario
     const proyectos = await Proyecto.find({ creador: _id })
-    // if (!proyectos) {
-    //     const error = new Error("El usuario no posee proyectos")
-    //     return res.status(404).json({ msg: error.message })
-    // }
     res.status(200).json(proyectos)
 }
 
@@ -23,7 +20,21 @@ const nuevoProyecto = async (req, res) => {
 }
 
 const obtenerProyecto = async (req, res) => {
+    const { id } = req.params
+    let proyecto
+    // Esto es debido a que me larga un error
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        proyecto = await Proyecto.findById(id)
+    } else {
+        const error = new Error("Proyecto no encontrado")
+        return res.status(404).json({ msg: error.message })
+    }
 
+    if (proyecto.creador.toString() !== req.usuario._id.toString()) {
+        const error = new Error("Accion no válida")
+        return res.status(401).json({ msg: error.message })
+    }
+    res.status(200).json(proyecto)
 }
 
 const editarProyecto = async (req, res) => {
