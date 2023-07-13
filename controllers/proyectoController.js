@@ -1,7 +1,13 @@
 import Proyecto from "../models/Proyecto.js"
 
 const obtenerProyectos = async (req, res) => {
-    console.log("Desde controllers")
+    const { _id } = req.usuario
+    const proyectos = await Proyecto.find({ creador: _id })
+    // if (!proyectos) {
+    //     const error = new Error("El usuario no posee proyectos")
+    //     return res.status(404).json({ msg: error.message })
+    // }
+    res.status(200).json(proyectos)
 }
 
 const nuevoProyecto = async (req, res) => {
@@ -14,7 +20,6 @@ const nuevoProyecto = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
-
 }
 
 const obtenerProyecto = async (req, res) => {
