@@ -25,7 +25,9 @@ const obtenerProyecto = async (req, res) => {
     // Esto es debido a que me larga un error
     if (mongoose.Types.ObjectId.isValid(id)) {
         proyecto = await Proyecto.findById(id)
-    } else {
+    } 
+    
+    if (!proyecto) {
         const error = new Error("Proyecto no encontrado")
         return res.status(404).json({ msg: error.message })
     }
@@ -42,7 +44,9 @@ const editarProyecto = async (req, res) => {
     let proyecto
     if (mongoose.Types.ObjectId.isValid(id)) {
         proyecto = await Proyecto.findById(id)
-    } else {
+    }
+
+    if (!proyecto) {
         const error = new Error("Proyecto no encontrado")
         return res.status(404).json({ msg: error.message })
     }
@@ -63,10 +67,31 @@ const editarProyecto = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
-
 }
 
 const eliminarProyecto = async (req, res) => {
+    const { id } = req.params
+    let proyecto
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        proyecto = await Proyecto.findById(id)
+    }
+    
+    if (!proyecto) {
+        const error = new Error("Proyecto no encontrado")
+        return res.status(404).json({ msg: error.message })
+    }
+
+    if (proyecto.creador.toString() !== req.usuario._id.toString()) {
+        const error = new Error("Accion no válida")
+        return res.status(401).json({ msg: error.message })
+    }
+
+    try {
+        await proyecto.deleteOne()
+        res.status(200).json({ msg: "Proyecto eliminado" })
+    } catch (error) {
+        console.log(error)
+    }
 
 }
 
