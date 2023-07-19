@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import Proyecto from "../models/Proyecto.js"
+import Tarea from "../models/Tarea.js"
 
 const obtenerProyectos = async (req, res) => {
     const { _id } = req.usuario
@@ -25,8 +26,8 @@ const obtenerProyecto = async (req, res) => {
     // Esto es debido a que me larga un error
     if (mongoose.Types.ObjectId.isValid(id)) {
         proyecto = await Proyecto.findById(id)
-    } 
-    
+    }
+
     if (!proyecto) {
         const error = new Error("Proyecto no encontrado")
         return res.status(404).json({ msg: error.message })
@@ -75,7 +76,7 @@ const eliminarProyecto = async (req, res) => {
     if (mongoose.Types.ObjectId.isValid(id)) {
         proyecto = await Proyecto.findById(id)
     }
-    
+
     if (!proyecto) {
         const error = new Error("Proyecto no encontrado")
         return res.status(404).json({ msg: error.message })
@@ -104,6 +105,23 @@ const eliminarColaborador = async (req, res) => {
 }
 
 const obtenerTareas = async (req, res) => {
+    const { id } = req.params
+    let proyecto
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        proyecto = await Proyecto.findById(id)
+    }
+
+    if (!proyecto) {
+        const error = new Error("Proyecto no encontrado")
+        return res.status(404).json({ msg: error.message })
+    }
+
+    // el usuario tiene que ser el creador del proyecto o colaborador
+
+    const tareas = await Tarea.find().where("proyecto").equals(id)
+
+    res.status(200).json(tareas)
+
 
 }
 
