@@ -18,7 +18,7 @@ const agregarTarea = async (req, res) => {
 
     if (existeProyecto.creador.toString() !== req.usuario._id.toString()) {
         const error = new Error("No tienes los permisos para añadir tareas")
-        return res.status(404).json({ msg: error.message })
+        return res.status(403).json({ msg: error.message })
     }
 
     try {
@@ -31,10 +31,54 @@ const agregarTarea = async (req, res) => {
 }
 
 const obtenerTarea = async (req, res) => {
+    const { id } = req.params
+    let tarea
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        // el populate sirrve para que cuando traiga la tarea con su id tambien me traiga los datos del proyecto que estan dentro de la tarea
+        tarea = await Tarea.findById(id).populate("proyecto")
+    }
 
+    if (!tarea) {
+        const error = new Error("La tarea no existe")
+        return res.status(404).json({ msg: error.message })
+    }
+
+    if (tarea.proyecto.creador.toString() !== req.usuario._id.toString()) {
+        const error = new Error("Acción no válida")
+        return res.status(403).json({ msg: error.message })
+    }
+
+    res.status(200).json(tarea)
 }
 
 const actualizarTarea = async (req, res) => {
+    const { id } = req.params
+    let tarea
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        tarea = await Tarea.findById(id).populate("proyecto")
+    }
+
+    if (!tarea) {
+        const error = new Error("La tarea no existe")
+        return res.status(404).json({ msg: error.message })
+    }
+
+    if (tarea.proyecto.creador.toString() !== req.usuario._id.toString()) {
+        const error = new Error("Acción no válida")
+        return res.status(403).json({ msg: error.message })
+    }
+
+    tarea.nombre = req.body.nombre || tarea.nombre
+    tarea.descripcion = req.body.descripcion || tarea.descripcion
+    tarea.prioridad = req.body.prioridad || tarea.prioridad
+    tarea.fechaEntrega = req.body.fechaEntrega || tarea.fechaEntrega
+
+    try {
+        const tareaAlmacenada = await tarea.save()
+        res.status(200).json(tareaAlmacenada)
+    } catch (error) {
+        console.log(error)
+    }
 
 }
 
