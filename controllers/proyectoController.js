@@ -37,7 +37,13 @@ const obtenerProyecto = async (req, res) => {
         const error = new Error("Accion no válida")
         return res.status(401).json({ msg: error.message })
     }
-    res.status(200).json(proyecto)
+
+    // Obtener las tareas del proyecto
+    const tareas = await Tarea.find().where("proyecto").equals(id)
+    res.status(200).json({
+        proyecto,
+        tareas
+    })
 }
 
 const editarProyecto = async (req, res) => {
@@ -104,27 +110,6 @@ const eliminarColaborador = async (req, res) => {
 
 }
 
-const obtenerTareas = async (req, res) => {
-    const { id } = req.params
-    let proyecto
-    if (mongoose.Types.ObjectId.isValid(id)) {
-        proyecto = await Proyecto.findById(id)
-    }
-
-    if (!proyecto) {
-        const error = new Error("Proyecto no encontrado")
-        return res.status(404).json({ msg: error.message })
-    }
-
-    // el usuario tiene que ser el creador del proyecto o colaborador
-
-    const tareas = await Tarea.find().where("proyecto").equals(id)
-
-    res.status(200).json(tareas)
-
-
-}
-
 export {
     obtenerProyectos,
     nuevoProyecto,
@@ -132,6 +117,5 @@ export {
     editarProyecto,
     eliminarProyecto,
     agregarColaborador,
-    eliminarColaborador,
-    obtenerTareas
+    eliminarColaborador
 }
