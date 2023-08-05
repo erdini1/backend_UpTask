@@ -4,7 +4,7 @@ import Tarea from "../models/Tarea.js"
 
 const obtenerProyectos = async (req, res) => {
     const { _id } = req.usuario
-    const proyectos = await Proyecto.find({ creador: _id })
+    const proyectos = await Proyecto.find().where("creador").equals(_id).select("-tareas")
     res.status(200).json(proyectos)
 }
 
@@ -25,7 +25,7 @@ const obtenerProyecto = async (req, res) => {
     let proyecto
     // Esto es debido a que me larga un error
     if (mongoose.Types.ObjectId.isValid(id)) {
-        proyecto = await Proyecto.findById(id)
+        proyecto = await Proyecto.findById(id).populate("tareas")
     }
 
     if (!proyecto) {
